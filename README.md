@@ -28,4 +28,4 @@ More information: https://www.hescor-project.com/
 
 # Bias-aware Human Existence Potential Model 
 
-The Human Existence Potential Model based by [![GitHub Org](https://img.shields.io/badge/GitHub-HESCOR-blue?logo=github&logoColor=white)](https://github.com/ChrisWege/HumanExistencePotential) is treating presence and absence points equally. 
+The Human Existence Potential Model based by [![GitHub Org]](https://github.com/ChrisWege/HumanExistencePotential) is treating presence and absence points equally. 
