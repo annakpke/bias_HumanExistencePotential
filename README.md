@@ -38,3 +38,9 @@ Five different functions that represent different biases are implemented:
 - Research Intensity
 
 more information about these biases can be found in the upcoming publication by Köpke A., Vogel A., Schmidt I., Vogels O. (LINK). 
+
+# Repository Content 
+
+This repository contains all the parts of the HEP-model that are used for the bias-aware calculation as well as routines for plotting and generating idealized model data for test runs. 
+
+- ´configure.py`
