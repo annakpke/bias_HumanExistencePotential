@@ -23,34 +23,18 @@ HEP_FILES = [
     '/data/hescor/akoepke/HEP-paper/model_paper/output_v20260911/hep-out_idealized_default.nc',
     '/data/hescor/akoepke/HEP-paper/model_paper/output_v20260911/hep-out_idealized_infra.nc',
     '/data/hescor/akoepke/HEP-paper/model_paper/output_v20260911/hep-out_idealized_access.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output/nsb/hep-out_nsb20.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/ab/hep-out_ab_0.2_200.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output/nsb/hep-out_nsb30.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output/nsb/hep-out_nsb50.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/nsb/hep-out_nsb30_r.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/nsb/hep-out_nsb25_sigma.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/nsb/hep-out_nsb60_r.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/nsb/hep-out_nsb70_r.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/ib/hep-out_iblog_0.5.nc',
-    #'/data/hescor/akoepke/HEP_output_v042026/output_final/ab/hep-out_ab_0.5_300.nc',
 ]
 
 HEP_VARS = [
-    'ehep',   # Use pre-computed mean for proper comparison
-    'ehep',   # post-processed (same run, with accessibility correction)
+    'ehep', 
+    'ehep',   
     'ehep',
-    #'ehep_mean',
-    #'ehep_mean',
 ]
 
 HEP_LABELS = [
     'HEP (default)',
     'Research Infrastructure Bias', # ($\sigma$ = 200km, $\gamma$ = 0.2)',
     'Accessibility Bias', # ($\sigma$ = 200km , $\gamma$ = 0.2)',
-    #r'DNL ($\sigma$ = 25km, r = 60km)',
-    #r'DNL ($\sigma$ = 25km, r = 70km)',
-    #'IB ($\gamma$ = 0.5, log)',
-    #'IB ($\gamma$ = 0.5, $\sigma$ = 300km)',
 ]
 
 # Input datasets (idealized bioclimatic data)
