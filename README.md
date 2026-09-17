@@ -43,4 +43,5 @@ more information about these biases can be found in the upcoming publication by 
 
 This repository contains all the parts of the HEP-model that are used for the bias-aware calculation as well as routines for plotting and generating idealized model data for test runs. 
 
-- ´configure.py`
+- ´configure.py´ with all the configuration options for the HEP model
+- 
