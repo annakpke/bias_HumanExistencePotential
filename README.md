@@ -43,5 +43,15 @@ more information about these biases can be found in the upcoming publication by 
 
 This repository contains all the parts of the HEP-model that are used for the bias-aware calculation as well as routines for plotting and generating idealized model data for test runs. 
 
-- ´configure.py´ with all the configuration options for the HEP model
-- 
+- `configure.py` with all the configuration options for the HEP model
+- `ehep_methods.py` with model calculation functions
+- `ehep_run.py` as main execution script
+- `ehep_inout.py` functions for input/output handling
+- `ehep_util.py` with utility functions
+- `bias_functions.py` includes all implemented bias functions (here new bias functions can be implemented as well)
+- a folder with scripts to generate idealized data
+- a folder with plotting routines
+
+# Setup the model 
+
+For setting up the model use the guide on the basic HEP-Model repository (here: [HEP-Model](https://github.com/ChrisWege/HumanExistencePotential)). 
