@@ -26,16 +26,16 @@ gridtype_t = 'lonlat'   # grid type in training input files:  'lonlat'=common lo
                         #                                       'curvilinear'=irregular lon/lat given for each gridpoint
 # lat-lon coordinates of domain boundaries for training data (real, in deg N/E ->use neg values for S/W)
 if 'southern' in expname_common:
-    lat_min_t = -38
-    lat_max_t = -16.5
-    lon_min_t = 11.5
-    lon_max_t = 45 #sAfrica:exclude desert-population: 17.5
+    #lat_min_t = -38
+    #lat_max_t = -16.5
+    #lon_min_t = 11.5
+    #lon_max_t = 45 #sAfrica:exclude desert-population: 17.5
 
     #Default for idealized version
-    #lat_min_t = -31.5
-    #lat_max_t = -25.5
-    #lon_min_t = 24.5
-    #lon_max_t = 32.5
+    lat_min_t = -31.5
+    lat_max_t = -25.5
+    lon_min_t = 24.5
+    lon_max_t = 32.5
 
     # Region 1: top-left (north of -30.5°S, west of 20°E)
     #lat_min_t = -30.5
@@ -64,17 +64,22 @@ else: #'Africa'
 # - main input fields (bioclim,vegetation)
 # path to main input file for training (string)
 # For idealized: point to folder prefix; each variable is stored in a separate file
+input_path_t = '/data/hescor/akoepke/HEP_test_documentation/input_idealized'
 #input_path_t = '/data/hescor/akoepke/HEP_output_v042026/input/'
-input_path_t = '/data/hescor/akoepke/HEP-paper/veg-data/mean_58000_65000.nc'
+#input_path_t = '/data/hescor/akoepke/HEP-paper/veg-data/mean_58000_65000.nc'
 #input_path_t = '/data/hescor/pschluet/pastclim/Krapp2021/Krapp2021_' #eg ...'bio07_v1.4.0.nc'
 #input_path_t = '/data/hescor/anvogel/input-data/vegetation-data/southern_Africa/veg_model_age_51000.nc' #eg ...'bio07_v1.4.0.nc'
 #input_path_t = '/data/hescor/anvogel/input-data/vegetation-data/paleoVeg_fraction_grouped/veg_model_age_77000.nc'
+
+# - idealized workflow: separate per-variable files, given either as an 'input/' directory
+# or as a file prefix '.../input_idealized' (-> input_idealized_1.nc, input_idealized_2.nc, ...)
+idealized_input = os.path.basename(input_path_t.rstrip('/')) in ('input', 'input_idealized')
 
 # - land-sea masking: restrict training samples (pre_abs_sites) and, for the idealized
 # workflow, generated site locations (idealized_locations.py) to real-world land only.
 # Off by default for the idealized synthetic dataset -- its domain is a clean box not meant
 # to respect real coastlines -- and on otherwise.
-use_land_sea_mask = not input_path_t.rstrip('/').endswith('input')
+use_land_sea_mask = not idealized_input
 
 # If input_path_t is an "input" directory holding separate per-variable files
 # (idealized workflow), the elif 'idealized' block below will handle configuration
@@ -94,13 +99,16 @@ elif 'Krapp' in input_path_t: #Krapp21 bioclim data specific setup
     input_varnames_t = input_filetime_pathfield #input_filetime_pathfield   # list of names of input fields in training input files (list of string)
     input_filedim_type_t = 'time'  # dimension of input fields that is stored in individual input files (string)
     pre_radius_cutoff_site = 50 # Radius of the presence around site, CAUTION: ~grid resolution (in km, default: 50)
-elif input_path_t.rstrip('/').endswith('input'): #idealized bioclim data specific setup (separate files per variable)
+elif idealized_input: #idealized bioclim data specific setup (separate files per variable)
     input_latname_t = 'latitude'     # name of lat variable in training files (string)
     input_lonname_t = 'longitude'     # name of lon variable in training files (string)
     input_onefield_t = False  # Each variable is in a separate file
     input_varnames_t = ['bio1', 'bio2', 'bio3']  # variable names inside each respective file
-    input_filedim_type_t = 'field'  # each file has one field (no time dimension)
-    input_filetime_pathfield = ['idealized_bio1', 'idealized_bio2', 'idealized_bio3']
+    input_filedim_type_t = 'time'  # file-per-variable reading: path = input_path_t + pathfield + pathend
+    if input_path_t.endswith('input_idealized'):
+        input_filetime_pathfield = ['_1', '_2', '_3']
+    else:
+        input_filetime_pathfield = ['idealized_1', 'idealized_2', 'idealized_3']
     input_filetime_pathend = '.nc'
     pre_radius_cutoff_site = 50 # Radius of the presence around site, CAUTION: ~grid resolution (in km, default: 50)
                             # If None, radius is applied in nearest_site_radius
@@ -159,8 +167,8 @@ soil_varname_i = soil_varname_t # name of soil field in investigation soil file 
 
 
 ### site input & config ### 
-if input_path_t.rstrip('/').endswith('input'): #idealized bioclim data specific setup (separate files per variable)
-    sites_path = ['/data/hescor/akoepke/HEP_output_v042026/input/idealized_presence.xlsx']
+if idealized_input: #idealized bioclim data specific setup (separate files per variable)
+    sites_path = ['/data/hescor/akoepke/HEP_test_documentation/idealized_presence.xlsx']
     sites_region = 'all' # option for area subselection (default 'all' / 'east':lon>10deg / 'west':lon<=10deg, string)
     sites_latname = 'Latitude' # name of lat variable in site files (string)
     sites_lonname = 'Longitude' # name of lon variable in site files (string)
@@ -185,10 +193,10 @@ chrono_quality_include = [1, 2, 3]  # ratings to include: 1=low, 2=good, 3=excel
 # - data use
 # bioclim using the Number of Bioclim, starting with 1 (not 0 as usual in python!)
 # Use all bioclim variables by default (1..nbioclim_def)
-#input_var_use = list(range(1, nbioclim_def+1))
+input_var_use = list(range(1, nbioclim_def+1))
 #input_var_use = list(range(1,nbioclim_def+1))#[1,8,10,16] #default(LBK):[1,2,12,18]
 #input_var_use = [1,2,3,4,5,6,7,10,11,12,13,14,16,17,18] #stdev<1-only
-input_var_use = [12, 15, 16, 17, 18] #paleoVeg-grouped-77ka:stdev<1-only or idealized case
+#input_var_use = [12, 15, 16, 17, 18] #paleoVeg-grouped-77ka:stdev<1-only or idealized case
 #input_var_use = [1]
 soil_use = False #flag, if soil data are additionally used (default False, flag)
 # select type of limits for apriori absence points: 0=none, 1=predefined 'bio*_min/max', 2=min/max of any pres conditions (for each infield), 3=min/max of all pres cond
@@ -226,7 +234,7 @@ logreg_max_iter = 100 #1000 ref:15000  # maximal number of iterations for fit co
 
 # BIAS CONFIGURATION (used by bias_functions.py)
 # Master flag: enable/disable entire bias weighting system
-use_bias_weighting = True  # master flag to enable/disable all bias weighting (flag)
+use_bias_weighting = True # master flag to enable/disable all bias weighting (flag)
 
 # Modular system for computing spatial bias weights via multiplicative layers (weighted logistic regression)
 
@@ -236,8 +244,8 @@ use_bias_weighting = True  # master flag to enable/disable all bias weighting (f
 # Weight samples based on distance to known observation sites.
 # Close to sites => higher weight (more sampling effort, higher detection probability)
 # Far from sites => lower weight (less sampling effort)
-use_nearest_site_bias = True  # enable/disable this bias layer (flag)
-pre_radius_site = 25            # radius around each site for weighting (real)
+use_nearest_site_bias = False  # enable/disable this bias layer (flag)
+pre_radius_site = 50            # radius around each site for weighting (real)
 nearest_site_max_weight = 1.0      # multiplicative weight at/near sites (maximum), default = 1.0
 
 # --- Determine pre_radius_cutoff_site based on nearest_site_bias ---
@@ -265,7 +273,7 @@ if debug_bias_config:
 # archaeological site (column in the site excel file configured via sites_path).
 # Sites with low-quality chronology (rating 1) are less reliable presence evidence => lower weight.
 # Sites with good/excellent chronology (rating 2 or 3) are fully reliable => full weight.
-use_chrono_quality_bias = True  # enable/disable this bias layer (flag)
+use_chrono_quality_bias = False  # enable/disable this bias layer (flag)
 # fixed part of the chrono quality column name in the site excel file; matched as a substring
 # since the actual column is prefixed with a changing ka-range, e.g. '58-45ka Chrono-Quality' (string)
 chrono_quality_colname = 'Chrono-Quality'
@@ -280,15 +288,15 @@ chrono_quality_weights = {1: 0.5, 2: 1.0, 3: 1.0}  # mapping from chrono quality
 use_accessibility_bias = False # enable/disable this bias layer (flag)
 accessibility_bias_sigma_km = 10  # sigma for Gaussian decay in accessibility bias (in km, default: 20.0, real)
 accessibility_bias_gamma = 0.2  # minimum weight floor for accessibility bias (default: 0.2, real)
-road_netcdf_path =  '/data/hescor/akoepke/HEP_output_v042026/input/' + 'road_mountain.nc' #'bias_accessibility_roads.nc' #'bias_accessibility_roads.nc'  # path to NetCDF file with road network
+road_netcdf_path =  '/data/hescor/akoepke/HEP_test_documentation/' + 'road_mountain.nc' #'bias_accessibility_roads.nc' #'bias_accessibility_roads.nc'  # path to NetCDF file with road network
 
 # --- Research Infrastructure Bias (research location density) ---
 # Weight absence points based on research infrastructure density.
 # High infrastructure density => lower weight (higher sampling effort)
 # Low infrastructure density => higher weight (lower sampling effort)
 
-use_research_infrastructure_bias = False  # enable/disable this bias layer (flag)
-research_infrastructure_netcdf_path = ('/data/hescor/akoepke/HEP_output_v042026/input/idealized_infrastructure.nc')#(/'data/hescor/akoepke/HEP_output_v042026/input/Archaeological_Infrastructure.nc')
+use_research_infrastructure_bias = True  # enable/disable this bias layer (flag)
+research_infrastructure_netcdf_path = ('/data/hescor/akoepke/HEP_test_documentation/' + 'idealized_infrastructure.nc')#(/'data/hescor/akoepke/HEP_output_v042026/input/Archaeological_Infrastructure.nc')
 research_infrastructure_scaling = 'log' # method to scale infrastructure density to bias weight: 'linear', 'log', or 'classes' (0→0.2, 1→0.3, 2-5→0.4, 6-15→0.6, 16-100→0.8, 101+→1.0)
 research_infrastructure_max_publications = 200
 # Minimum and maximum weights used in the scaling
@@ -301,7 +309,7 @@ research_infrastructure_weight_max = 1.0
 # Low excavation intensity => lower weight (poorly-researched province, absence is uncertain)
 
 use_research_intensity_bias = False  # enable/disable this bias layer (flag)
-research_intensity_netcdf_path = ('/data/hescor/akoepke/HEP_output_v042026/input/Archaeological_Intensity.nc')
+research_intensity_netcdf_path = ('/data/hescor/akoepke/HEP_test_documentation/' + 'Archaeological_Intensity.nc')
 research_intensity_scaling = 'log'  # method to scale intensity to bias weight: 'linear' or 'log'
 research_intensity_max_value = 200  # value treated as maximum excavation intensity for scaling
 # Minimum and maximum weights used in the scaling
@@ -326,7 +334,7 @@ use_absence_bias_normalization = True   # normalize absence sample weights to me
 
 # --- Bias map selection for backward compatibility ---
 # When both presence and absence biases are computed, which one is used for bias_weight_map?
-bias_map_priority = 'presence'      # 'presence', 'absence', or 'both' (if 'both', combines them)
+bias_map_priority = 'both'      # 'presence', 'absence', or 'both' (if 'both', combines them)
 
 # --- Post-processing bias correction ---
 # Applied to the ensemble-mean HEP after all runs complete.
@@ -353,39 +361,39 @@ if use_bias_weighting:
         print(f"  - Research intensity bias: {use_research_intensity_bias} (with intensity data from {research_intensity_netcdf_path})")
 
 ### plot & output config ###
-output_path_common = '/data/hescor/akoepke/HEP-paper/output_v20260908/1b/' #'/data/hescor/akoepke/HEP-paper/output_v20260908/1a' #/data/hescor/akoepke/VE_HEP/v_20260907'      # common part of output path for plots and data (string)
+output_path_common = '/data/hescor/akoepke/HEP_test_documentation/idealized_IB/' #'/data/hescor/akoepke/HEP-paper/output_v20260908/1a' #/data/hescor/akoepke/VE_HEP/v_20260907'      # common part of output path for plots and data (string)
 # - plots
 annotate = False        # flag if annotation text to be plotted (flag)
 text_anno = "d)"        # annotation text  in plot (string)
 figsize_ref = (10,10)   # reference size of plots (tuple of real)
 
 plot_presabs = True     # flag if presence/absence map to be plotted (flag)
-plot_presabs_path = output_path_common+'03_reg2_plot_pres_abs_1b.pdf' #/05_plot_pres_abs_postHP_1a.pdf'     # path to output presence-absence plot (string)
+plot_presabs_path = output_path_common+'plot_pres_abs_ideal_IB.pdf' #/05_plot_pres_abs_postHP_1a.pdf'     # path to output presence-absence plot (string)
 plot_presabs_markersize = 1.5 *50 #pre_radius_site #ref:160     # markersize in presence-absence plot (real)
 plot_presabs_sitesize_cap = 50   # upper bound on site (triangle) markersize in presence-absence plots, independent of plot_presabs_markersize (real)
 
 plot_hist = True        # flag if histogram of normalized input fields at pres/abs points to be plotted (flag)
 plot_hist_fieldsel = 'use' # define which input fields to plot in histogram: 'all' / 'use' / 'custom' (string)
-plot_hist_varnames = ['bio12', 'bio15', 'bio16', 'bio17' ,'bio18']  # used only if plot_hist_fieldsel == 'custom': field names (as in eu.allfield_names, e.g. 'bio12') to plot (list of string)
+plot_hist_varnames = ['bio1', 'bio2', 'bio3', 'bio4' ,'bio5']  # used only if plot_hist_fieldsel == 'custom': field names (as in eu.allfield_names, e.g. 'bio12') to plot (list of string)
 plot_hist_norm = False  # flag if x-values on histogram should be normalized wrt domain statistics(x-mean/stdev) (flag) !CAUTION: fit only for norm!
 plot_hist_log = False   # flag if count (y-axis) of histogram should be logaritmic (suggested for small #pres/#abs ratio, default: False flag)
 plot_hist_max = 5.      # maximum for normalized x-values to be plotted in histogram
-plot_hist_path = output_path_common+'03_reg2_plot_hist.pdf' #'/05_plot_hist_postHP_1a.pdf'  # path to output histogram plot (string)
+plot_hist_path = output_path_common+'plot_hist_ideal_IB.pdf' #'/05_plot_hist_postHP_1a.pdf'  # path to output histogram plot (string)
 plot_hist_field_labels = {'bio12': 'Forest', 'bio15': 'Woodland', 'bio16': 'Grassland', 'bio17': 'Shrubland', 'bio18': 'Desert'}  # optional per-field subplot subtitle overrides for the overview plot's
                               # histogram row: {raw field name: display label}, e.g. {'bio12': 'Annual Precipitation'}
                               # (dict of string->string); fields not listed keep their raw name (e.g. 'bio12')
 
 plot_distinct = True    # flag if distinctiveness (all .vs. pres) of human presence conditions to be plotted (flag)
 plot_bias_weight_map = True  # flag if bias weight map should be plotted (flag)
-bias_weight_map_output_path = output_path_common +'03_reg2_plot_bias_weight_map_1b.pdf' #'/05_plot_bias_weight_map_postHP_1a.pdf'  # path to output bias weight map plot (string)
+bias_weight_map_output_path = output_path_common +'plot_bias_weight_map_ideal_IB.pdf' #'/05_plot_bias_weight_map_postHP_1a.pdf'  # path to output bias weight map plot (string)
 
 # - combined overview plot (presence/absence map, bias weight map, input-field histograms, mean HEP map)
 plot_overview = True    # flag if combined overview plot should be plotted (flag)
-plot_overview_path = output_path_common+'03_reg2_plot_overview_1b.pdf'  # path to output combined overview plot (string)
-plot_overview_title = 'HEP for 65-70 ka bp Region 2'  # title shown at the top of the combined overview plot; set per run, empty = no title (string)
+plot_overview_path = output_path_common+'plot_overview_ideal_IB.pdf'  # path to output combined overview plot (string)
+plot_overview_title = 'HEP for idealized case'  # title shown at the top of the combined overview plot; set per run, empty = no title (string)
 plot_overview_greyscale = False  # flag: also save a greyscale (print/photocopy-safe) raster PNG version of the combined overview plot (flag)
-plot_overview_greyscale_path = output_path_common+'03_reg2_plot_overview_1b_greyscale.png'  # path to output greyscale overview plot PNG (string)
+plot_overview_greyscale_path = output_path_common+'plot_overview_greyscale.png'  # path to output greyscale overview plot PNG (string)
 # - data
-ehep_outname = '03_reg2_hep-out_1b.nc'#'05_hep-out_postHP_1a.nc'  # name of main output file (change this to rename, e.g. 'hep-out-v1.nc') (string)
+ehep_outname = 'hep-out_ideal_IB.nc'#'05_hep-out_postHP_1a.nc'  # name of main output file (change this to rename, e.g. 'hep-out-v1.nc') (string)
 ehep_outpath = output_path_common+'/'+ehep_outname # path to main output file (string)
 ehep_logpath = output_path_common+'/'+ehep_outname.replace('.nc','log.txt') # path to logfile mirroring all console output (string)

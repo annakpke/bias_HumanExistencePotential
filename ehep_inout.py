@@ -283,9 +283,10 @@ def read_data_ncdf(use_type,gridtype,lat_min,lat_max,lon_min,lon_max,input_path,
             try:
                 input_data_itime = Dataset(input_path_itime)
                 var = input_data_itime.variables[input_varnames[imain]]
-                # If timeindex is None, var is expected to be 2D (lat,lon)
+                # If timeindex is None, var is expected to be 2D (lat,lon),
+                # possibly with leading singleton dims, e.g. (field=1,lat,lon)
                 if timeindex is None:
-                    mainin_array[imain_avail] = var[y_0:y_end+1, x_0:x_end+1]
+                    mainin_array[imain_avail] = np.squeeze(var[..., y_0:y_end+1, x_0:x_end+1])
                 else:
                     mainin_array[imain_avail] = var[timeindex, y_0:y_end+1, x_0:x_end+1]
                 input_data_itime.close()
