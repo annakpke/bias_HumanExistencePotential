@@ -49,6 +49,8 @@ This repository contains all the parts of the HEP-model that are used for the bi
 - `ehep_inout.py` functions for input/output handling
 - `ehep_util.py` with utility functions
 - `bias_functions.py` includes all implemented bias functions (here new bias functions can be implemented as well)
+- `setup.sh` as a setup bash script
+- `pyvenv_list.txt` list for the virtual environment that is created when using the setup script
 - scripts to generate idealized data
 - plotting routines
 
