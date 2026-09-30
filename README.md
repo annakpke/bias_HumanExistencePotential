@@ -54,6 +54,22 @@ This repository contains all the parts of the HEP-model that are used for the bi
 - scripts to generate idealized data
 - plotting routines
 
+### Generating of idealized data 
+- `input_idealized_1.py` generates a global gradient from west to east
+- `input_idealized_2.py` generates a local change of temperature at 29°E where temperature decreases with altitude
+- `input_idealized_3.py` generates a local change that is bigger than input_idealized_2
+- `idealized_roads.py` for generating idealized roads (east, west and on input_idealized_2)
+- `idealized_locations.py` for generating site locations with a gradient of density from west to east
+- `idealized_infra.py` for generating 3 areas with different numbers that represent research infrastructure bias
+
+### Plotting routines 
+- `plot_HEP.py` plots the HEP-Map
+- `plot_compare_1d.py` plots the input data, the idealized HEP output and the difference between default and bias-enabled HEP as graphs
+- `plot_difference.py` for a difference map between two HEP experiment outputs
+- `plot_input_env.py` plots the bioclimatic input (not idealized)
+- `plot_vegetation.py` plots the vegetation input (not idealied)
+
 # Setup the model 
 
 For setting up the model use the guide on the basic HEP-Model repository (here: [HEP-Model](https://github.com/ChrisWege/HumanExistencePotential)). 
+
